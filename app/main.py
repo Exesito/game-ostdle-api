@@ -24,6 +24,10 @@ def get_db():
 def main():
     return RedirectResponse(url="/docs")
 
+@app.get("/healthcheck")
+def read_root():
+     return {"status": "ok"}
+
 @app.get("/games/", response_model=List[schemas.Game])
 def get_games(db:Session=Depends(get_db)):         
     response = db.query(models.Game).all()
@@ -49,14 +53,14 @@ def get_soundtracks(db:Session=Depends(get_db)):
     return response
 
 #@app.get("/ostdlegame/", response_model= List[schemas.OstdleGame]) ERROR ON THE SCHEMA
-@app.get("/ostdlegame/")
+@app.get("/ostdlegame/", response_model=List[schemas.OstdleGame])
 def get_ostdlegames(db:Session=Depends(get_db)):
 
     response = db.query(models.OstdleGame).all()
 
     return response
 
-@app.get("/ostdlegame/{game_id}")
+@app.get("/ostdlegame/{game_id}/", response_model = schemas.DetailsOstdleGame)
 def get_ostdlegame_by_id(game_id:int, db:Session=Depends(get_db)):
 
     response = db.query(models.OstdleGame, models.Soundtrack, models.Game).filter(
@@ -66,11 +70,11 @@ def get_ostdlegame_by_id(game_id:int, db:Session=Depends(get_db)):
     
     return response
 
-@app.get("/today/")
+@app.get("/today/", response_model = schemas.DetailsOstdleGame)
 def get_today(db:Session = Depends(get_db)):
 
     tdy_game = db.query(models.OstdleGame).filter(
-        cast(models.OstdleGame.date, Date) == date.today()
+        cast(models.OstdleGame.game_date, Date) == date.today()
         ).first()
 
     # Create game for today if doesn't exists
@@ -84,6 +88,8 @@ def get_today(db:Session = Depends(get_db)):
         models.Soundtrack, models.Soundtrack.id == models.OstdleGame.soundtrack_id).join(
         models.Game, models.Game.id == models.Soundtrack.game_id).first()
     
+    print(tdy_game)
+    
     return tdy_game
 
 # Create game for today
@@ -94,7 +100,7 @@ def create_today_game(db):
 
     print(soundtrack.id)
 
-    new_gameOstdle = models.OstdleGame(date = date.today(), soundtrack_id = soundtrack.id)
+    new_gameOstdle = models.OstdleGame(game_date = date.today(), soundtrack_id = soundtrack.id)
 
     db.add(new_gameOstdle)
     db.commit()

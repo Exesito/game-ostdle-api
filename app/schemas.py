@@ -1,5 +1,6 @@
 from typing import Optional, Tuple, List
 from pydantic import BaseModel
+from datetime import date
 
 
 class Game(BaseModel):
@@ -12,12 +13,10 @@ class Game(BaseModel):
         orm_mode = True
 
 class OstdleGame(BaseModel):
-    id:int
-    date:str
-    soundtrack_id:int
-
-    class Config:
-        orm_mode = True
+    id: int
+    game_date: date
+    soundtrack_id: int
+    
 
 class Soundtrack(BaseModel):
     id: Optional[int] = 0
@@ -32,7 +31,8 @@ class SoundtrackWithGame(BaseModel):
     Soundtrack: Soundtrack
     Game: Game
 
-class TodaysGame(BaseModel):
+class DetailsOstdleGame(BaseModel):
+
     OstdleGame: OstdleGame
     Soundtrack: Soundtrack
     Game: Game

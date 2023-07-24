@@ -1,3 +1,4 @@
 proyect.txt
 app/__pycache__/
 venv/
+fly.toml
