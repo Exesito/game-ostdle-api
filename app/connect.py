@@ -4,11 +4,8 @@ from sqlalchemy.orm import sessionmaker
 from os import environ
 
 database_url = environ['DATABASE_URL']
-print(database_url)
 
 database_url = database_url.replace('postgres://', 'postgresql://')
-
-print(database_url)
 
 engine = create_engine(database_url)
 
